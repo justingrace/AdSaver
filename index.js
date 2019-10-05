@@ -1,7 +1,7 @@
 require('dotenv').config()
 const express = require('express')
 const authRoutes = require('./routes/auth');
-const scrapeRoutes = require('./routes/scrape');
+const scrapeRoutes = require('./routes/scraper');
 const passportSetup = require('./config/passport');
 const cookieSession = require('cookie-session');
 const passport = require('passport')

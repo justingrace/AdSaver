@@ -1,4 +1,3 @@
-
 const router = require('express').Router();
 const {google} = require('googleapis')
 const puppeteer = require('puppeteer');
@@ -319,13 +318,13 @@ router.post('/', async (req, res) => {
                 parentFolderId = folderId;
             } else parentFolderId = files[0].id;
             let {folderId: pnID} = await createFolder(`${page_name} ${genDateStamp()}`, [parentFolderId]);
-            pageNameId=pnID;
+            pageNameId = pnID;
             let {folderId} = await createFolder("screenshots", [pageNameId]);
-            screenshotsFolderId=folderId;
-            let {folderId:t1} = await createFolder("T1 videos", [pageNameId]);
+            screenshotsFolderId = folderId;
+            let {folderId: t1} = await createFolder("T1 videos", [pageNameId]);
             t1VideosFolderId = t1
-            let {folderId:t2} = await createFolder("T2 videos", [pageNameId]);
-            t2VideosFolderId= t2
+            let {folderId: t2} = await createFolder("T2 videos", [pageNameId]);
+            t2VideosFolderId = t2
 
             // 5. For each ad, generate screenshots and videos appropriately
             const PADDING = 0;
@@ -359,8 +358,8 @@ router.post('/', async (req, res) => {
                             let {ok, err, vid} = await download(ad.vid_url)
                             if (ok) {
                                 let vid_duration = await getVideoDurationInSeconds(ad.vid_url) || 0;
-                                const {ok:ok_vid_upload, err, fileId:vidFileId} = await uploadVideoFile(`${vid_index}.mp4`, [vid_duration > 20 ? t1VideosFolderId : t2VideosFolderId], vid)
-                                if(!ok_vid_upload){
+                                const {ok: ok_vid_upload, err, fileId: vidFileId} = await uploadVideoFile(`${vid_index}.mp4`, [vid_duration > 20 ? t1VideosFolderId : t2VideosFolderId], vid)
+                                if (!ok_vid_upload) {
                                     errors += "Error uploading video \n" + err + "\n";
                                 }
                                 videos_saved[ad.vid_url] = 1;
