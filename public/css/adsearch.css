@@ -1,0 +1,127 @@
+@import url('https://fonts.googleapis.com/css?family=Open+Sans:400,800&display=swap');
+
+body{
+    font-family: 'Open Sans', sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.image{
+    height: 100vh;
+    background: url('../img/bg.jpg') no-repeat 50%;
+    background-size: cover;
+    position: relative;
+}
+
+.image:after{
+    content: '';
+    background: #000;
+    left: 0;
+    top: 0;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    opacity: 0.4;
+}
+
+form {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+form h1{
+    color: #fff;
+    font-size: 50px;
+    width: 100%;
+    margin: 0 0 20px 0;
+}
+
+input[type='text']{
+    height: 40px;
+    width: 650px;
+    border-radius: 4px;
+    font-size: 20px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+    padding: 0 12px;
+}
+
+.urlBox{
+    position: relative;
+    margin-top: 20px;
+}
+.urlBox:before{
+    content: 'URL';
+    color: white;
+    font-size: 13px;
+    position: absolute;
+    left: 0;
+    top: -20px;
+}
+
+.emailBox{
+    position: relative;
+    margin-top: 25px;
+}
+
+.email{
+    width: 400px !important;
+}
+
+.emailBox:before{
+    content: 'Email';
+    color: white;
+    font-size: 13px;
+    position: absolute;
+    left: 0;
+    top: -20px;
+}
+
+@media(max-width: 500px){
+    input[type='text']{
+        width: 300px !important;
+        font-size: 17px;
+    }
+    input[type='text'].email{
+        margin-top: 20px;
+        width: 250px !important;
+    }
+    .emailBox:before{
+        top: 0;
+    }
+}
+
+input[type='submit']{
+    height: 40px;
+    font-size: 20px;
+    margin-top: 30px;
+    background: #634c3e;
+    border: 1px solid #634c3e;
+    box-shadow: 2px 2px 4px 0px #ada2a291;
+    padding: 0 20px;
+    border-radius: 4px;
+    color: white;
+    cursor: pointer;
+}
+
+input[type='submit']:hover{
+    background: #fff;
+    border: 1px solid #8e654c;
+    color: #8e654c;
+}
+
+.error{
+    width: 100%;
+    margin-bottom: 70px;
+    text-align: center;
+    color: white;
+    background: rgba(197, 65, 56, 0.95);
+    padding: 20px 10px;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
