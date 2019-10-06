@@ -218,7 +218,7 @@ router.post('/', async (req, res) => {
     }
     const genDateStamp = () => {
         let d = new Date();
-        return d.getDate() + "/" + d.getMonth() + "/" + d.getFullYear();
+        return `${d.getDate()}/${d.getMonth()}/${d.getFullYear()}`;
     }
 
     // 4. Extract data via Puppeteer
@@ -317,7 +317,7 @@ router.post('/', async (req, res) => {
                 let {folderId} = await createFolder(page_name, [adLibraryId]);
                 parentFolderId = folderId;
             } else parentFolderId = files[0].id;
-            let {folderId: pnID} = await createFolder(`${page_name} ${genDateStamp()}`, [parentFolderId]);
+            let {folderId: pnID} = await createFolder(`${genDateStamp()} ${page_name}`, [parentFolderId]);
             pageNameId = pnID;
             let {folderId} = await createFolder("screenshots", [pageNameId]);
             screenshotsFolderId = folderId;
