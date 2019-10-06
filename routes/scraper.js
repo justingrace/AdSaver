@@ -221,6 +221,7 @@ router.post('/', async (req, res) => {
         return `${d.getDate()}/${d.getMonth()}/${d.getFullYear()}`;
     }
 
+
     // 4. Extract data via Puppeteer
     if (error === null) {
         res.send("Done! You will receive an email")
@@ -312,7 +313,7 @@ router.post('/', async (req, res) => {
         let pageNameId = null, parentFolderId = null, screenshotsFolderId, t1VideosFolderId, t2VideosFolderId;
         if (error === null) {
             let {data: {files: [{id: adLibraryId}]}} = await drive.files.list({q: `name = 'Ad Library'`});
-            let {data: {files}} = await drive.files.list({q: `name = '${page_name}'`});
+            let {data: {files}} = await drive.files.list({q: `name = '${page_name}' and parents='${adLibraryId}'`});
             if (files.length === 0) {
                 let {folderId} = await createFolder(page_name, [adLibraryId]);
                 parentFolderId = folderId;
@@ -380,8 +381,6 @@ router.post('/', async (req, res) => {
                         "Button Text": ad.button
                     });
                     ad_index++;
-
-
                 }
 
                 let fields = ["S. No.", "Primary Text", "Headline", "Description", "Video URL", "Button Text"];
