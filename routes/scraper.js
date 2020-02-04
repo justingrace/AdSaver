@@ -225,7 +225,7 @@ router.post('/', async (req, res) => {
     // 4. Extract data via Puppeteer
     if (error === null) {
         res.send("Done! You will receive an email")
-        const browser = await puppeteer.launch({args: ['--lang=en-US,en', '--no-sandbox']});
+        const browser = await puppeteer.launch({args: ['--lang=en-US', '--no-sandbox']});
         const page = await browser.newPage();
         await page.setViewport({width: 1980, height: 1080})
         await page.goto(url);
@@ -241,13 +241,13 @@ router.post('/', async (req, res) => {
                 let headline = "", description = "", primary_text = "", id, buttonEl, primaryTextEl, button = "",
                     has_carousel;
 
-                const PAGE_NAME_SELECTOR = "._7ksv";
+                const PAGE_NAME_SELECTOR = "._8tue";
                 const PRIMARY_TEXT_SELECTOR = "._7jyr";
                 const INFO_SELECTOR = "._8jgz._8jg_";
 
                 return JSON.stringify(
                     {
-                        page_name: document.querySelector(PAGE_NAME_SELECTOR).innerText,
+                        page_name: document.querySelector(PAGE_NAME_SELECTOR) != null ? document.querySelector(PAGE_NAME_SELECTOR).innerText : "",
                         ads: ads.reduce((obj, ad) => {
                             primaryTextEl = ad.querySelector(PRIMARY_TEXT_SELECTOR);
                             primary_text = primaryTextEl != null ? primaryTextEl.innerText : "";
