@@ -61,6 +61,8 @@ router.post('/', async (req, res) => {
                 auth: oauth2Client
             });
 
+
+
             await drive.files.list({q: "name='1'"})
                 .catch(e => {
                     console.log("Google Drive Error", e)
@@ -218,7 +220,7 @@ router.post('/', async (req, res) => {
     }
     const genDateStamp = () => {
         let d = new Date();
-        return `${d.getDate()}/${d.getMonth()}/${d.getFullYear()}`;
+        return `${d.getDate()}/${d.getMonth()+1}/${d.getFullYear()}`;
     }
 
 
