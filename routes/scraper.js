@@ -240,7 +240,7 @@ router.post('/', async (req, res) => {
 
         try {
             data = await page.$$eval(AD_SELECTOR, ads => {
-                let headline = "", description = "", primary_text = "", id, buttonEl, primaryTextEl, button = "",
+                let headline = "", description = "", primary_text = "", id, buttonEl, primaryTextEl, button = "", link="",
                     has_carousel;
 
                 const PAGE_NAME_SELECTOR = "._8tue";
@@ -253,7 +253,7 @@ router.post('/', async (req, res) => {
                         ads: ads.reduce((obj, ad) => {
                             primaryTextEl = ad.querySelector(PRIMARY_TEXT_SELECTOR);
                             primary_text = primaryTextEl != null ? primaryTextEl.innerText : "";
-
+                            link = ad.querySelector("._231w._231z._4yee")!==null ? ad.querySelector("._231w._231z._4yee").href : "";
                             buttonEl = ad.querySelector("button");
                             button = buttonEl != null ? buttonEl.innerText : "";
 
@@ -293,7 +293,8 @@ router.post('/', async (req, res) => {
                                 primary_text,
                                 headline,
                                 description,
-                                button
+                                button,
+                                link
                             };
                             return obj;
 
@@ -312,7 +313,7 @@ router.post('/', async (req, res) => {
             console.log("Error encountered in processing: ", e);
         }
         // 4. Create Drive folders
-        let pageNameId = null, parentFolderId = null, screenshotsFolderId, t1VideosFolderId, t2VideosFolderId;
+        let pageNameId = null, parentFolderId = null, screenshotsFolderId, fullPageScreenshotsFolderId, t1VideosFolderId, t2VideosFolderId;
         if (error === null) {
             let {data: {files: [{id: adLibraryId}]}} = await drive.files.list({q: `name = 'Ad Library'`});
             let {data: {files}} = await drive.files.list({q: `name = '${page_name}' and parents='${adLibraryId}'`});
@@ -324,6 +325,8 @@ router.post('/', async (req, res) => {
             pageNameId = pnID;
             let {folderId} = await createFolder("screenshots", [pageNameId]);
             screenshotsFolderId = folderId;
+            let {folderId: fps} = await createFolder("fullPageScreenshots", [screenshotsFolderId]);
+            fullPageScreenshotsFolderId = fps;
             let {folderId: t1} = await createFolder("T1 videos", [pageNameId]);
             t1VideosFolderId = t1
             let {folderId: t2} = await createFolder("T2 videos", [pageNameId]);
@@ -337,9 +340,11 @@ router.post('/', async (req, res) => {
             let videos_saved = {};
             let ad_copy_json = [];
 
+            let links = {};
             if (ads) {
                 for (const id of Object.keys(ads)) {
                     let ad = ads[id]
+                    if(ad.link) links[ad.link]=ad.link;
                     const img = await page.screenshot({
                         clip: {
                             x: ad.left - PADDING,
@@ -380,12 +385,25 @@ router.post('/', async (req, res) => {
                         "Headline": ad.headline,
                         "Description": ad.description,
                         "Video URL": ad.vid_url != null ? ad.vid_url : "",
-                        "Button Text": ad.button
+                        "Button Text": ad.button,
+                        "Page URL": ad.link != null ? ad.link : ""
                     });
                     ad_index++;
                 }
 
-                let fields = ["S. No.", "Primary Text", "Headline", "Description", "Video URL", "Button Text"];
+                let linkKeys= Object.keys(links), img, urlLink;
+                for(let i=0; i<linkKeys.length; i++){
+                    urlLink = linkKeys[i];
+                    await page.goto(linkKeys[i]);
+                    await page.waitFor(10000);
+                    img = await page.screenshot({ fullPage: true })
+                    let {ok, err, fileId: imgFileId} = await uploadImageFile(`${urlLink.slice(0, urlLink.indexOf(".com")+4)}.jpg`, [fullPageScreenshotsFolderId], img)
+                    if (!ok){
+                        errors += "Error downloading image \n" + err + "\n";
+                    }
+                }
+
+                let fields = ["S. No.", "Primary Text", "Headline", "Description", "Video URL", "Button Text", "Page URL"];
                 const json2csvParser = new Parser({fields});
                 const csv = json2csvParser.parse(ad_copy_json);
                 const {ok, err, fileId: csvId} = await uploadCSVFile(`Ad Copy - ${page_name}`, [pageNameId], csv);
@@ -404,6 +422,8 @@ router.post('/', async (req, res) => {
         error = null;
         errorCode = null;
     }
+
+
 })
 
 module.exports = router
