@@ -237,7 +237,6 @@ router.post('/', async (req, res) => {
 
         const AD_SELECTOR = "._7owt > *";
         let page_name, ads, data;
-
         try {
             data = await page.$$eval(AD_SELECTOR, ads => {
                 let headline = "", description = "", primary_text = "", id, buttonEl, primaryTextEl, button = "", link="",
@@ -312,21 +311,29 @@ router.post('/', async (req, res) => {
             errorCode = 2;
             console.log("Error encountered in processing: ", e);
         }
+
         // 4. Create Drive folders
         let pageNameId = null, parentFolderId = null, screenshotsFolderId, fullPageScreenshotsFolderId, t1VideosFolderId, t2VideosFolderId;
         if (error === null) {
+
             let {data: {files: [{id: adLibraryId}]}} = await drive.files.list({q: `name = 'Ad Library'`});
-            let {data: {files}} = await drive.files.list({q: `name = '${page_name}' and parents='${adLibraryId}'`});
+
+            let {data: {files}} = await drive.files.list({q: `name = "${page_name}" and parents="${adLibraryId}"`});
+
             if (files.length === 0) {
                 let {folderId} = await createFolder(page_name, [adLibraryId]);
                 parentFolderId = folderId;
             } else parentFolderId = files[0].id;
+
             let {folderId: pnID} = await createFolder(`${genDateStamp()} ${page_name}`, [parentFolderId]);
             pageNameId = pnID;
+
             let {folderId} = await createFolder("screenshots", [pageNameId]);
             screenshotsFolderId = folderId;
+
             let {folderId: fps} = await createFolder("fullPageScreenshots", [screenshotsFolderId]);
             fullPageScreenshotsFolderId = fps;
+
             let {folderId: t1} = await createFolder("T1 videos", [pageNameId]);
             t1VideosFolderId = t1
             let {folderId: t2} = await createFolder("T2 videos", [pageNameId]);
@@ -391,6 +398,7 @@ router.post('/', async (req, res) => {
                     ad_index++;
                 }
 
+
                 let linkKeys= Object.keys(links), img, urlLink;
                 for(let i=0; i<linkKeys.length; i++){
                     urlLink = linkKeys[i];
@@ -409,12 +417,13 @@ router.post('/', async (req, res) => {
                 const {ok, err, fileId: csvId} = await uploadCSVFile(`Ad Copy - ${page_name}`, [pageNameId], csv);
                 if (!ok) errors += "Error producing Google Sheet \n" + err + "\n";
             }
-
         } else {
             console.log("error!")
             errorCode = 2;
             error = "Unexpected error. No ads found.";
         }
+
+        console.log("Final errors", errors)
         sendResponseEmail(page_name, pageNameId);
         browser.close();
     } else {
