@@ -6,6 +6,8 @@ const {Parser} = require('json2csv')
 const {sendMail} = require('../emailer');
 const keys = require('../config/keys')
 const {getVideoDurationInSeconds} = require("get-video-duration");
+const {default:fullPageScreenshot} = require("puppeteer-full-page-screenshot");
+const Jimp = require("jimp");
 
 let error = null;
 let errorCode = null;
@@ -229,7 +231,7 @@ router.post('/', async (req, res) => {
         res.send("Done! You will receive an email")
         const browser = await puppeteer.launch({args: ['--lang=en-US', '--no-sandbox']});
         const page = await browser.newPage();
-        await page.setViewport({width: 1980, height: 1080})
+        await page.setViewport({width: 1920, height: 1080})
         await page.goto(url);
         await page.waitFor(60000);
         await autoScroll(page);
@@ -242,7 +244,7 @@ router.post('/', async (req, res) => {
                 let headline = "", description = "", primary_text = "", id, buttonEl, primaryTextEl, button = "", link="",
                     has_carousel;
 
-                const PAGE_NAME_SELECTOR = "._8tue";
+                const PAGE_NAME_SELECTOR = "._8wh_";
                 const PRIMARY_TEXT_SELECTOR = "._7jyr";
                 const INFO_SELECTOR = "._8jgz._8jg_";
 
@@ -398,17 +400,19 @@ router.post('/', async (req, res) => {
                     ad_index++;
                 }
 
-
-                let linkKeys= Object.keys(links), img, urlLink;
+                let linkKeys= Object.keys(links), urlLink;
                 for(let i=0; i<linkKeys.length; i++){
                     urlLink = linkKeys[i];
                     await page.goto(linkKeys[i]);
                     await page.waitFor(10000);
-                    img = await page.screenshot({ fullPage: true })
-                    let {ok, err, fileId: imgFileId} = await uploadImageFile(`${urlLink.slice(0, urlLink.indexOf(".com")+4)}.jpg`, [fullPageScreenshotsFolderId], img)
-                    if (!ok){
-                        errors += "Error downloading image \n" + err + "\n";
-                    }
+                    // img = await page.screenshot({ fullPage: true })
+                    const scr = await fullPageScreenshot(page);
+                    scr.getBuffer(Jimp.MIME_PNG, async (error, img) => {
+                        let {ok, err, fileId: imgFileId} = await uploadImageFile(`${urlLink.slice(0, urlLink.indexOf(".com")+4)}.jpg`, [fullPageScreenshotsFolderId], img)
+                        if (!ok){
+                            errors += "Error downloading image \n" + err + "\n";
+                        }
+                    })
                 }
 
                 let fields = ["S. No.", "Primary Text", "Headline", "Description", "Video URL", "Button Text", "Page URL"];
