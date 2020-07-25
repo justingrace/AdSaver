@@ -244,7 +244,7 @@ router.post('/', async (req, res) => {
                 let headline = "", description = "", primary_text = "", id, buttonEl, primaryTextEl, button = "", link="",
                     has_carousel;
 
-                const PAGE_NAME_SELECTOR = "._8wh_";
+                const PAGE_NAME_SELECTOR = "._99s5";
                 const PRIMARY_TEXT_SELECTOR = "._7jyr";
                 const INFO_SELECTOR = "._8jgz._8jg_";
 
@@ -255,7 +255,8 @@ router.post('/', async (req, res) => {
                             primaryTextEl = ad.querySelector(PRIMARY_TEXT_SELECTOR);
                             primary_text = primaryTextEl != null ? primaryTextEl.innerText : "";
                             link = ad.querySelector("._231w._231z._4yee")!==null ? ad.querySelector("._231w._231z._4yee").href : "";
-                            buttonEl = ad.querySelector("button");
+                            buttonEl = ad.querySelectorAll("button");
+                            buttonEl = buttonEl[buttonEl.length-1]
                             button = buttonEl != null ? buttonEl.innerText : "";
 
                             let infoBox = ad.querySelector(INFO_SELECTOR);
