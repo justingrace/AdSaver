@@ -237,14 +237,14 @@ router.post('/', async (req, res) => {
         await autoScroll(page);
         await page.evaluate(() => window.scrollTo(0, 0))
 
-        const AD_SELECTOR = "._8wh_ > *";
+        const AD_SELECTOR = "._99s5 > *";
         let page_name, ads, data;
         try {
             data = await page.$$eval(AD_SELECTOR, ads => {
                 let headline = "", description = "", primary_text = "", id, buttonEl, primaryTextEl, button = "", link="",
                     has_carousel;
 
-                const PAGE_NAME_SELECTOR = "._99s5";
+                const PAGE_NAME_SELECTOR = "._8wh_";
                 const PRIMARY_TEXT_SELECTOR = "._7jyr";
                 const INFO_SELECTOR = "._8jgz._8jg_";
 
