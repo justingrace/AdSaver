@@ -237,7 +237,7 @@ router.post('/', async (req, res) => {
         await autoScroll(page);
         await page.evaluate(() => window.scrollTo(0, 0))
 
-        const AD_SELECTOR = "._7owt > *";
+        const AD_SELECTOR = "._8wh_ > *";
         let page_name, ads, data;
         try {
             data = await page.$$eval(AD_SELECTOR, ads => {
